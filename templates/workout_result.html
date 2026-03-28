@@ -1,0 +1,410 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.workout-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.8s ease;
+}
+
+.workout-header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.workout-card {
+    background: var(--surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-md);
+    padding: 1.5rem;
+    position: relative;
+    transition: var(--transition);
+}
+
+.day-badge {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    padding: 6px 14px;
+    background: var(--secondary-glow);
+    color: var(--secondary);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.focus-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.focus-area i {
+    font-size: 1.5rem;
+    color: var(--primary-light);
+}
+
+.focus-area h3 {
+    font-size: 1.25rem;
+    color: var(--white);
+    margin: 0;
+}
+
+.exercise-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.exercise-item {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: var(--transition);
+}
+
+.exercise-item:hover {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(16, 185, 129, 0.2);
+    transform: translateX(5px);
+}
+
+.exercise-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.exercise-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--white);
+}
+
+.exercise-sets {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 2px;
+}
+
+.demo-btn {
+    background: var(--primary-glow);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: var(--primary-light);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.demo-btn:hover {
+    background: var(--primary);
+    color: var(--white);
+}
+
+/* Modal Enhancements */
+.demo-overlay {
+    position: fixed; inset: 0;
+    background: rgba(3, 7, 18, 0.95);
+    backdrop-filter: blur(16px);
+    z-index: 2000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.demo-card {
+    background: var(--surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-lg);
+    width: 100%; max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+}
+
+.demo-header {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.demo-video-wrap {
+    padding: 1.5rem;
+    aspect-ratio: 16/9;
+    width: 100%;
+}
+
+.demo-video-wrap iframe {
+    width: 100%; height: 100%;
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    background: #000;
+}
+
+.demo-info {
+    padding: 0 2.5rem 2.5rem;
+}
+
+.muscle-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-right: 8px;
+    margin-bottom: 8px;
+}
+
+.muscle-primary { background: var(--primary-glow); color: var(--primary-light); border: 1px solid rgba(16, 185, 129, 0.2); }
+.muscle-secondary { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); }
+
+.tip-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+</style>
+
+<div class="workout-container">
+
+    <div class="workout-header">
+        <h1 class="gradient-text"><i class="fas fa-dumbbell"></i> FitGenie Algorithm: 7-Day Blueprint</h1>
+        <p>Architected for your goal: <strong style="color:var(--primary-light)">{{ goal }}</strong></p>
+    </div>
+
+    <div class="workout-grid">
+        {% for day, content in plan.items() %}
+        <div class="workout-card">
+            <span class="day-badge">{{ day }}</span>
+
+            <div class="focus-area">
+                {% if "Rest" in content.Focus or "Recovery" in content.Focus %}
+                    <i class="fas fa-moon"></i>
+                {% elif "Push" in content.Focus or "Chest" in content.Focus %}
+                    <i class="fas fa-hand-back-fist"></i>
+                {% elif "Pull" in content.Focus or "Back" in content.Focus %}
+                    <i class="fas fa-arrows-to-dot"></i>
+                {% elif "Leg" in content.Focus %}
+                    <i class="fas fa-person-running"></i>
+                {% elif "Cardio" in content.Focus or "HIIT" in content.Focus %}
+                    <i class="fas fa-fire-flame-curved"></i>
+                {% else %}
+                    <i class="fas fa-bolt-lightning"></i>
+                {% endif %}
+                <h3>{{ content.Focus }}</h3>
+            </div>
+
+            <div class="exercise-list">
+                {% set exercises = content.Workout.strip().split('\n') %}
+                {% for item in exercises %}
+                    {% if item.strip() %}
+                    <div class="exercise-item" style="animation: fadeUp 0.5s ease both; animation-delay: {{ loop.index0 * 0.1 }}s;">
+                        <div class="exercise-info">
+                            <span class="exercise-name">{{ item.strip('- ').split('(')[0].strip() }}</span>
+                            <span class="exercise-sets">
+                                {% if '(' in item %}
+                                    <i class="fas fa-repeat" style="font-size: 0.7rem;"></i> 
+                                    {{ item.split('(')[1].replace(')','') }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        <button class="demo-btn"
+                            onclick="showDemo('{{ item.strip('- ').split('(')[0].strip() | lower | replace(' ', '-') }}', '{{ item.strip('- ').split('(')[0].strip() }}')">
+                            <i class="fas fa-play"></i> Demo
+                        </button>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div style="text-align:center; margin-top:3rem;">
+        <a href="{{ url_for('meal.dashboard') }}" class="secondary-btn" style="display: inline-flex; width: auto; min-width: 250px;">
+            <i class="fas fa-arrow-left"></i> Return to FitGenie Dashboard
+        </a>
+    </div>
+
+</div>
+
+<!-- EXERCISE DEMO MODAL -->
+<div id="demo-overlay" class="demo-overlay" style="display:none;" onclick="if(event.target===this)closeDemo()">
+    <div class="demo-card">
+        <div class="demo-header">
+            <h2 id="demo-title" class="gradient-text" style="font-size: 1.5rem; margin: 0;">Exercise Name</h2>
+            <button onclick="closeDemo()" style="background:none; border:none; color:var(--text-dim); cursor:pointer; font-size: 1.5rem;"><i class="fas fa-times"></i></button>
+        </div>
+
+        <div class="demo-video-wrap">
+            <iframe id="demo-iframe" src="" allowfullscreen style="display:none;"></iframe>
+            <div id="demo-placeholder" style="display:none; height:100%; width:100%; background: #000; flex-direction:column; align-items:center; justify-content:center; border-radius:12px;">
+                <i class="fab fa-youtube" style="font-size: 4rem; color: var(--error); margin-bottom: 1rem;"></i>
+                <p>Visualization not available. Use tutorial link below.</p>
+            </div>
+        </div>
+
+        <div class="demo-info">
+            <div id="demo-muscles" style="margin-bottom: 2rem;"></div>
+            
+            <div class="demo-tips-box">
+                <h4 style="color: var(--primary-light); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.25rem;">
+                    <i class="fas fa-clipboard-check"></i> Form Technique Tips
+                </h4>
+                <div id="demo-tips-list"></div>
+            </div>
+
+            <div style="margin-top: 2.5rem; border-top: 1px solid var(--glass-border); padding-top: 1.5rem; display: flex; justify-content: center;">
+                <a id="demo-yt-btn" href="#" target="_blank" class="premium-btn" style="width: auto; padding: 0.75rem 1.5rem; font-size: 0.85rem;">
+                    <i class="fab fa-youtube"></i> Full YouTube Tutorial
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Comprehensive Exercise Demo Database
+const EX = {
+  // Push / Chest / Triceps
+  'push-up': { muscles:['Chest','Triceps'], sec:['Shoulders'], tips:['Keep elbows at 45°','Straight line from head to heels','Chest to floor range'], yt:'IODxDxX7oi4' },
+  'dumbbell-press': { muscles:['Chest'], sec:['Triceps','Shoulders'], tips:['Squeeze chest at top','Control the descent'], yt:'QsYFEkKk_M4' },
+  'bench-press': { muscles:['Chest'], sec:['Triceps','Shoulders'], tips:['Keep back arched slightly','Drive through feet'], yt:'rT7DgCr-3pg' },
+  'incline-press': { muscles:['Upper Chest'], sec:['Shoulders'], tips:['Set bench to 30-45°','Don\'t flare elbows'], yt:'8iPEnn-ltC8' },
+  'chest-fly': { muscles:['Chest'], sec:[], tips:['Keep slight bend in elbows','Stretch chest at bottom'], yt:'eozdVDA78K0' },
+  'tricep-dip': { muscles:['Triceps'], sec:['Chest'], tips:['Keep torso upright for triceps','Lower to 90 degrees'], yt:'2z8JmcrW-As' },
+  'tricep-extension': { muscles:['Triceps'], sec:[], tips:['Keep elbows tucked','Full lockout at top'], yt:'nRiJVZDpdL0' },
+  'skull-crusher': { muscles:['Triceps'], sec:[], tips:['Keep elbows pointing up','Lower bar to forehead'], yt:'d_KZxkY_0cM' },
+
+  // Pull / Back / Biceps
+  'pull-up': { muscles:['Lats'], sec:['Biceps','Core'], tips:['Pull to chest','Full stretch at bottom'], yt:'eGo4IYR2NME' },
+  'lat-pulldown': { muscles:['Lats'], sec:['Biceps'], tips:['Pull bar to upper chest','Squeeze shoulder blades'], yt:'CAwf7n6Luuc' },
+  'dumbbell-row': { muscles:['Back'], sec:['Biceps'], tips:['Pull toward hip','Keep back flat'], yt:'pYcpY20QaE8' },
+  'barbell-row': { muscles:['Back'], sec:['Biceps'], tips:['Keep torso parallel to floor','Pull to belly button'], yt:'9efgcAjQe7E' },
+  'face-pull': { muscles:['Rear Delts'], sec:['Traps'], tips:['Pull rope to forehead','Squeeze at the back'], yt:'0QsCEKKJ0L8' },
+  'bicep-curl': { muscles:['Biceps'], sec:[], tips:['Keep elbows pinned','Squeeze at top'], yt:'ykJmrZ5v0Oo' },
+  'hammer-curl': { muscles:['Biceps'], sec:['Forearms'], tips:['Use neutral grip','Control the weight'], yt:'zC3nLlEvin4' },
+
+  // Shoulders
+  'overhead-press': { muscles:['Shoulders'], sec:['Triceps','Core'], tips:['Press overhead in a straight line','Brace core tight'], yt:'QAQ64BPHt2w' },
+  'lateral-raise': { muscles:['Side Delts'], sec:[], tips:['Slight bend in elbows','Raise to shoulder level'], yt:'WJm9O2sjc0I' },
+  'front-raise': { muscles:['Front Delts'], sec:[], tips:['Raise dumbells forward','Don\'t swing body'], yt:'-t7fuZ0KhDA' },
+
+  // Legs / Glutes
+  'squat': { muscles:['Quads','Glutes'], sec:['Core'], tips:['Break parallel','Weight on heels','Keep chest upright'], yt:'ultWZbUMPL8' },
+  'goblet-squat': { muscles:['Quads'], sec:['Core'], tips:['Hold weight at chest','Sit back into hips'], yt:'MeIiIdhcExc' },
+  'deadlift': { muscles:['Back','Glutes'], sec:['Hamstrings'], tips:['Flat back','Bar close to shins','Leg drive first'], yt:'op9kVnSso6Q' },
+  'romanian-deadlift': { muscles:['Hamstrings','Glutes'], sec:['Lower Back'], tips:['Hinge at the hips','Keep dumbbells close to legs'], yt:'JCXUYuzwNrM' },
+  'lunge': { muscles:['Quads','Glutes'], sec:['Hamstrings'], tips:['Drop back knee straight down','Keep front knee behind toes'], yt:'QOVaHwm-Q6U' },
+  'leg-press': { muscles:['Quads'], sec:['Glutes'], tips:['Don\'t lock knees at top','Lower until 90 degrees'], yt:'IZxyjW7OSvc' },
+  'calf-raise': { muscles:['Calves'], sec:[], tips:['Full stretch at bottom','Squeeze at top'], yt:'gwLzBJYoWlI' },
+
+  // Core / Cardio / Bodyweight
+  'plank': { muscles:['Core'], sec:['Shoulders'], tips:['Squeeze glutes','No sagging hips','Breathe steadily'], yt:'pSHjTRCQxIw' },
+  'bicycle-crunch': { muscles:['Abs','Obliques'], sec:[], tips:['Twist torso to knee','Pedal legs smoothly'], yt:'9FGilxCbdz8' },
+  'leg-raise': { muscles:['Lower Abs'], sec:[], tips:['Keep lower back pressed to floor','Lift legs straight'], yt:'JB2oyawG9KI' },
+  'mountain-climber': { muscles:['Core'], sec:['Shoulders','Cardio'], tips:['Keep hips down','Drive knees to chest'], yt:'nmwgirgXLYM' },
+  'burpee': { muscles:['Full Body'], sec:['Cardio'], tips:['Chest to floor','Jump at the top'], yt:'dZgVxmi6cgI' },
+  'jump-squat': { muscles:['Quads','Cardio'], sec:['Glutes'], tips:['Land softly','Explode up'], yt:'qqCGGOZJbKc' },
+  'kettlebell-swing': { muscles:['Glutes','Hamstrings'], sec:['Cardio'], tips:['Hinge at hips','Thrust forward aggressively'], yt:'YSxHifyI6s8' },
+  'high-knee': { muscles:['Cardio'], sec:['Core'], tips:['Drive knees up','Pump arms'], yt:'ZZbB6RFOUS0' },
+  'farmer-carry': { muscles:['Core','Grip'], sec:['Shoulders'], tips:['Keep chest proud','Walk with even steps'], yt:'FxcB_rWeEX0' },
+  'brisk-walk': { muscles:['Cardio'], sec:[], tips:['Keep good posture','Walk at challenging pace'], yt:'oFkEMuKInU4' }
+};
+
+function showDemo(slug, name) {
+    const overlay = document.getElementById('demo-overlay');
+    const iframe = document.getElementById('demo-iframe');
+    const placeholder = document.getElementById('demo-placeholder');
+    const title = document.getElementById('demo-title');
+    const muscleDiv = document.getElementById('demo-muscles');
+    const tipsDiv = document.getElementById('demo-tips-list');
+    const ytBtn = document.getElementById('demo-yt-btn');
+
+    title.innerText = name;
+    
+    // Fuzzy matching for exercise dict
+    let exMatch = EX[slug];
+    if (!exMatch && slug.endsWith('s')) exMatch = EX[slug.slice(0, -1)];
+    if (!exMatch) {
+         for (let k in EX) {
+              if (slug.includes(k) && !EX[k].alias) {
+                   exMatch = EX[k];
+                   break;
+              }
+         }
+    }
+    if (!exMatch) {
+         for (let k in EX) {
+              if (slug.includes(k) || k.includes(slug)) {
+                   exMatch = EX[k];
+                   break;
+              }
+         }
+    }
+    
+    let ex = exMatch || { muscles:['N/A'], sec:[], tips:['Search tutorial below'], yt:'' };
+    if (ex.alias) ex = EX[ex.alias];
+
+    if (ex.yt) {
+        iframe.src = `https://www.youtube.com/embed/${ex.yt}`;
+        iframe.style.display = 'block';
+        placeholder.style.display = 'none';
+    } else {
+        iframe.style.display = 'none';
+        placeholder.style.display = 'flex';
+        ytBtn.href = `https://www.youtube.com/results?search_query=${encodeURIComponent(name)}+exercise+form`;
+    }
+
+    // Muscles
+    muscleDiv.innerHTML = '';
+    ex.muscles.forEach(m => {
+        muscleDiv.innerHTML += `<span class="muscle-badge muscle-primary">${m}</span>`;
+    });
+    (ex.sec || []).forEach(m => {
+        muscleDiv.innerHTML += `<span class="muscle-badge muscle-secondary">${m}</span>`;
+    });
+
+    // Tips
+    tipsDiv.innerHTML = '';
+    ex.tips.forEach(t => {
+        tipsDiv.innerHTML += `<div class="tip-item"><i class="fas fa-check" style="color:var(--primary-light); margin-top:4px;"></i> <span>${t}</span></div>`;
+    });
+
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDemo() {
+    const overlay = document.getElementById('demo-overlay');
+    const iframe = document.getElementById('demo-iframe');
+    overlay.style.display = 'none';
+    iframe.src = '';
+    document.body.style.overflow = 'auto';
+}
+</script>
+
+{% endblock %}

@@ -1,1 +1,1 @@
-# FitGenie---AI-powered-personalized-nutrition-and-workout-planner
+# Ai-Nutrition-App

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<canvas id="genie-canvas"></canvas>
+<div class="auth-wrapper">
+
+    <div class="auth-box glass-panel" style="border-radius: var(--r-lg); padding: 3rem; text-align: center; border-color: rgba(16, 185, 129, 0.2);">
+        <div class="auth-brand" style="margin-bottom: 2.5rem;">
+            <h2 class="gradient-text" style="font-size: 2.2rem; margin-bottom: 0.5rem;">Welcome Back</h2>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Enter the portal to your FitGenie journey</p>
+        </div>
+
+        <form method="POST">
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+                <div style="position: relative;">
+                    <i class="fas fa-user" style="position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--primary-light); font-size: 0.9rem;"></i>
+                    <input type="text" name="username" placeholder="Username" required autocomplete="username" 
+                           style="padding-left: 3rem; width: 100%;">
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 2rem;">
+                <div style="position: relative;">
+                    <i class="fas fa-lock" style="position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--primary-light); font-size: 0.9rem;"></i>
+                    <input type="password" name="password" placeholder="Password" required autocomplete="current-password" 
+                           style="padding-left: 3rem; width: 100%;">
+                </div>
+            </div>
+            <button class="primary-btn btn-block" type="submit">
+                <i class="fas fa-right-to-bracket"></i> Unlock My Dashboard
+            </button>
+        </form>
+
+        <p class="auth-link" style="margin-top: 2rem; color: var(--text-muted); font-size: 0.9rem;">
+            New to the magic? <a href="{{ url_for('auth.register') }}" style="color: var(--primary-light); text-decoration: none; font-weight: 700;">Join FitGenie</a>
+        </p>
+    </div>
+</div>
+
+
+<style>
+.auth-wrapper {
+    position: relative;
+    min-height: calc(100vh - 120px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    overflow: hidden;
+}
+.auth-box {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 450px;
+    animation: fadeUp 0.8s ease backwards;
+}
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="result-container">
+
+    <div class="summary-section" style="display: grid; grid-template-columns: repeat( auto-fit, minmax(200px, 1fr) ); gap: 1rem; margin-bottom: 2rem;">
+
+        <div class="summary-card" style="border-bottom: 3px solid var(--primary-light);">
+            <h4><i class="fas fa-gauge-high"></i> BMI Analysis</h4>
+            <div class="summary-value" style="color:var(--white); margin-bottom: 10px;">{{ bmi }}</div>
+            
+            <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; position: relative; margin: 15px 0;">
+                {% set bmi_percent = ((bmi - 15) / (40 - 15) * 100) %}
+                {% if bmi_percent < 0 %}{% set bmi_percent = 0 %}{% endif %}
+                {% if bmi_percent > 100 %}{% set bmi_percent = 100 %}{% endif %}
+                <div style="position: absolute; left: {{ bmi_percent }}%; top: 50%; transform: translate(-50%, -50%); width: 14px; height: 14px; background: var(--white); border: 3px solid var(--primary-light); border-radius: 50%; box-shadow: 0 0 10px var(--primary-glow); z-index: 2;"></div>
+                <div style="width: 100%; height: 100%; background: linear-gradient(90deg, #60a5fa 18%, #10b981 18% 25%, #f59e0b 25% 30%, #ef4444 30%); border-radius: 10px; opacity: 0.6;"></div>
+            </div>
+
+            <span class="badge
+                {% if bmi_result == 'Normal' %}badge-green
+                {% elif bmi_result == 'Underweight' %}badge-blue
+                {% elif bmi_result == 'Overweight' %}badge-orange
+                {% else %}badge-red{% endif %}">
+                {{ bmi_result }}
+            </span>
+        </div>
+
+        <div class="summary-card" style="border-bottom: 3px solid var(--secondary);">
+            <h4><i class="fas fa-fire-flame-curved"></i> Metabolism</h4>
+            <div style="display: flex; gap: 15px; align-items: baseline;">
+                <div class="summary-value" style="font-size: 1.3rem;">{{ target_calories }}<small style="font-size: 0.65rem;">/{{ calories }} kcal</small></div>
+            </div>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 5px;">Maintenance: {{ calories }} kcal</p>
+            
+            <div style="margin-top: 15px; width: 100%;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-dim); margin-bottom: 4px;">
+                    <span>Goal Progress</span>
+                    <span>Target Reached</span>
+                </div>
+                <div style="width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                    <div style="width: 100%; height: 100%; background: var(--secondary); border-radius: 10px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-card" style="border-bottom: 3px solid var(--accent);">
+            <h4><i class="fas fa-chart-pie"></i> Macro Split</h4>
+            <div style="width: 100%; margin-top: 5px;">
+                <div style="margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px;">
+                        <span><i class="fas fa-fish" style="font-size: 0.7rem; margin-right: 5px;"></i> Protein</span>
+                        <span style="font-weight: 700; color: var(--primary-light);">{{ macros.protein }}g</span>
+                    </div>
+                    <div style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                        <div style="width: 35%; height: 100%; background: var(--primary-light); border-radius: 10px;"></div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px;">
+                        <span><i class="fas fa-wheat-awn" style="font-size: 0.7rem; margin-right: 5px;"></i> Carbs</span>
+                        <span style="font-weight: 700; color: var(--secondary);">{{ macros.carbs }}g</span>
+                    </div>
+                    <div style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                        <div style="width: 40%; height: 100%; background: var(--secondary); border-radius: 10px;"></div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 0;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px;">
+                        <span><i class="fas fa-droplet" style="font-size: 0.7rem; margin-right: 5px;"></i> Fats</span>
+                        <span style="font-weight: 700; color: var(--accent);">{{ macros.fat }}g</span>
+                    </div>
+                    <div style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                        <div style="width: 25%; height: 100%; background: var(--accent); border-radius: 10px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-card" style="border-bottom: 3px solid #60a5fa;">
+            <h4><i class="fas fa-droplet"></i> Hydration</h4>
+            <div class="summary-value" style="color:#60a5fa;">{{ water }}<small>L/day</small></div>
+        </div>
+
+    </div>
+
+    <div class="result-actions" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; margin-bottom: 2.5rem; gap: 1.5rem;">
+        <a href="/download-pdf" class="primary-btn" style="width: 100%; max-width: 250px; text-decoration: none; text-align: center; border-radius: 12px; padding: 15px 20px; font-weight: 600; font-size: 1rem; box-sizing: border-box; display: inline-flex; justify-content: center; align-items: center; gap: 8px;">
+            <i class="fas fa-file-pdf"></i> Save PDF
+        </a>
+        <a href="{{ url_for('meal.dashboard') }}" class="secondary-btn" style="width: 100%; max-width: 250px; text-decoration: none; text-align: center; border-radius: 12px; padding: 15px 20px; font-weight: 600; font-size: 1rem; box-sizing: border-box; display: inline-flex; justify-content: center; align-items: center; gap: 8px;">
+            <i class="fas fa-house"></i> Return Options
+        </a>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+        <h2 class="gradient-text" style="font-size: 1.6rem;">
+            <i class="fas fa-wand-sparkles"></i> Your Personalized FitPlan
+        </h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Curated by AI for your specific metabolic profile</p>
+    </div>
+
+    <style>
+        .meal-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; width: 100%; }
+        @media (min-width: 800px) { .meal-grid { grid-template-columns: 1fr 1fr; } }
+        
+        .replace-btn {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 10px;
+            padding: 14px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .replace-btn:hover {
+            background: rgba(16, 185, 129, 0.25);
+            color: #6ee7b7;
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+        }
+    </style>
+
+    <div class="meal-grid">
+        {% for meal_type, meal_text in plan.items() %}
+            {% if meal_type != "Tips" %}
+            {% set meal_id = meal_type | lower | replace(' ', '-') | replace('(', '') | replace(')', '') %}
+            
+            <div class="meal-card glass-panel" style="display: flex; flex-direction: column; justify-content: space-between; border-radius: var(--r-lg); padding: 1.5rem; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.75rem;">
+                        <h3 style="margin-bottom: 0; display: flex; align-items: center; gap: 10px; font-size: 1.25rem;">
+                            {% if "Breakfast" in meal_type %}<span style="font-size: 1.3rem;">🍳</span>
+                            {% elif "Lunch" in meal_type %}<span style="font-size: 1.3rem;">🥗</span>
+                            {% elif "Dinner" in meal_type %}<span style="font-size: 1.3rem;">🥘</span>
+                            {% elif "Snack" in meal_type %}<span style="font-size: 1.3rem;">🥨</span>
+                            {% else %}<span style="font-size: 1.3rem;">🍽</span>{% endif %}
+                            <span style="color: var(--white); font-weight: 700;">{{ meal_type }}</span>
+                        </h3>
+                    </div>
+                    
+                    <div class="meal-text" id="meal-{{ meal_id }}" style="background: rgba(255,255,255,0.06); padding: 1.25rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); font-size: 0.95rem; line-height: 1.6; color: var(--white); margin-bottom: 1.5rem; min-height: 120px;">
+                        {{ meal_text | replace('\n','<br>') | safe }}
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: stretch;">
+                    <button class="replace-btn" onclick="replaceMeal('{{ meal_type }}', 'meal-{{ meal_id }}', this)">
+                        <i class="fas fa-rotate"></i> Swap Alternative
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+
+        {% if plan.get("Tips") %}
+        <div class="meal-card full-width glass-panel" style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(59, 130, 246, 0.08)); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: var(--r-lg); padding: 2rem; margin-top: 1rem;">
+            <h3 style="color: #a78bfa; display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; font-size: 1.35rem;">
+                <i class="fas fa-lightbulb"></i> Expert Health Guidance
+            </h3>
+            <div class="meal-text" style="color: var(--white); font-size: 1.05rem; border-left: 3px solid #8b5cf6; padding-left: 1.5rem; line-height: 1.7; background: rgba(0,0,0,0.25); padding: 1.25rem; border-radius: 0 12px 12px 0;">
+                {{ plan["Tips"] | replace('\n','<br>') | safe }}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<script>
+// Track variations for infinite alternatives
+const replaceCounts = {};
+
+function replaceMeal(mealType, mealID, btn) {
+    replaceCounts[mealType] = (replaceCounts[mealType] || 0) + 1;
+    const variation = replaceCounts[mealType];
+
+    const container = document.getElementById(mealID);
+    const overlay   = document.getElementById('loading-overlay');
+    const loadingP  = overlay.querySelector('p');
+
+    if (loadingP) loadingP.textContent = `Manifesting alternative #${variation} for ${mealType}…`;
+    overlay.style.display = 'flex';
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing…';
+    }
+
+    fetch('/replace-meal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ meal_type: mealType, variation: variation })
+    })
+    .then(res => res.json())
+    .then(data => {
+        overlay.style.display = 'none';
+        if (loadingP) loadingP.textContent = 'Generating your personalized plan…';
+
+        if (data.options) {
+            container.innerHTML = data.options.replace(/\n/g, '<br>');
+            container.classList.add('meal-updated');
+            setTimeout(() => container.classList.remove('meal-updated'), 1000);
+        }
+
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fas fa-wand-sparkles"></i> Try Another (${variation + 1})`;
+        }
+    })
+    .catch(() => {
+        overlay.style.display = 'none';
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-rotate"></i> Try Again';
+        }
+    });
+}
+</script>
+
+<style>
+.meal-updated {
+    animation: pulseGlow 1.5s ease;
+}
+@keyframes pulseGlow {
+    0% { background: rgba(16, 185, 129, 0.15); box-shadow: 0 0 20px var(--primary-glow); }
+    100% { background: rgba(0,0,0,0.2); box-shadow: none; }
+}
+</style>
+
+{% endblock %}
